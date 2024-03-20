@@ -14,13 +14,14 @@ public class Server {
     }
     public static void start(int port){
         try{
-            ServerSocket socket = new ServerSocket(port);
-            socket.setReuseAddress(true);
-            for (;;){
-                Socket client = socket.accept();
-                System.out.println("Client connected "+ client.getInetAddress().getHostAddress());
-                ClientHandler clientSocket = new ClientHandler(client);
-                new Thread(clientSocket).start();
+            try (ServerSocket socket = new ServerSocket(port)) {
+                socket.setReuseAddress(true);
+                for (;;) {
+                    Socket client = socket.accept();
+                    System.out.println("Client connected " + client.getInetAddress().getHostAddress());
+                    ClientHandler clientSocket = new ClientHandler(client);
+                    new Thread(clientSocket).start();
+                }
             }
         }catch (Exception e){
             throw new RuntimeException(e);
@@ -28,8 +29,8 @@ public class Server {
     }
     private static class ClientHandler implements Runnable{
         private final Socket clientSocket;
-        private PrintWriter out;
-        private BufferedReader in;
+        private final PrintWriter out;
+        private final BufferedReader in;
         private BankClient currentCLient;
         public ClientHandler(Socket clientSocket) throws IOException{
             this.clientSocket = clientSocket;
@@ -39,31 +40,27 @@ public class Server {
         @Override
         public void run() {
             try{
-                out.println("Welcome to the bank, please enter 1 to login or 2 to register");
+                out.print("Welcome to the bank, please enter 1 to login or 2 to register: ");
                 String choice = in.readLine();
                 switch (choice){
-                    case "1" -> {
-                        handleLogin();
-                    }
-                    case "2" -> {
-                        handleRegistration();
-                    }
+                    case "1" -> handleLogin();
+                    case "2" -> handleRegistration();
                 }
             } catch (Exception e){
                 throw new RuntimeException(e);
             }
         }
         private void handleLogin() throws IOException{
-            out.println("Enter your UID:");
+            out.print("Enter your UID:");
             String uid = in.readLine();
-            out.println("Enter your PIN");
+            out.print("Enter your PIN");
             String pin = in.readLine();
             currentCLient = authenticateClient(uid,pin);
             if(currentCLient != null){
-                out.println("Login successful");
+                out.print("Login successful");
                 handleLoggedInClient();
             } else {
-                out.println("Invalid credentials");
+                out.print("Invalid credentials");
             }
         }
         private BankClient authenticateClient(String UID, String PIN){
@@ -75,19 +72,19 @@ public class Server {
             return null;
         }
         private void handleRegistration() throws IOException {
-            out.println("Enter your desired UID:");
+            out.print("Enter your desired UID:");
             String uid = in.readLine();
 
             if (findClientByUID(uid) != null) {
-                out.println("UID already exists. Please choose another.");
+                out.print("UID already exists. Please choose another.");
                 return;
             }
-            out.println("Enter a PIN for your account:");
+            out.print("Enter a PIN for your account:");
             String pin = in.readLine();
             BankClient newClient = new BankClient(uid,pin);
             clients.add(newClient);
             currentCLient = newClient;
-            out.println("Registration successful!");
+            out.print("Registration successful!");
             handleLoggedInClient();
         }
 
@@ -107,29 +104,14 @@ public class Server {
                 out.println("4. Deposit");
                 out.println("5. Withdraw");
                 out.println("6. Logout");
-                String choice = in.readLine().trim();
-
+                String choice = in.readLine();
                 switch (choice) {
-                    case "1":
-                        handleCreateAccount();
-                        break;
-                    case "2":
-                        handleViewAccounts();
-                        break;
-                    case "3":
-                        handleChangePIN();
-                        break;
-                    case "4":
-                        handleDeposit();
-                        break;
-                    case "5":
-                        handleWithdraw();
-                        break;
-                    case "6":
-                        out.println("Goodbye!");
-                        return;
-                    default:
-                        out.println("Invalid choice.");
+                    case "1" -> handleCreateAccount();
+                    case "2" -> handleViewAccounts();
+                    case "3" -> handleChangePIN();
+                    case "4" -> handleDeposit();
+                    case "5" -> handleWithdraw();
+                    case "6" -> out.print("Goodbye!");
                 }
             }
         }
