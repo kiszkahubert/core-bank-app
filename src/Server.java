@@ -137,8 +137,6 @@ public class Server {
                 }
             }
         }
-
-
         private synchronized void handleCreateAccount() {
             try{
                 out.println("Please insert credentials for your new account");
@@ -156,6 +154,54 @@ public class Server {
                 out.println("Currency: "+val.getCurrency()+"\n" +
                             "Balance: "+val.getBalance()+"\n"+
                             val.getAuthorizedUsers()); // to replace probably wrong
+            }
+        }
+        private void handleChangePIN() {
+            try{
+                out.print("Insert your old PIN: ");
+                String pin = in.readLine();
+                if(pin.equals(currentCLient.getPIN())){
+                    out.print("Insert your new pin: ");
+                    String temp = in.readLine();
+                    currentCLient.setPIN(temp);
+                    out.println("Your PIN has been changed");
+                } else{
+                    out.println("Invalid pin");
+                }
+            } catch (Exception e){
+                throw new RuntimeException(e);
+            }
+        }
+        private void handleDeposit() {
+            try{
+                out.print("What is the currency you want to deposit");
+                String currency = in.readLine();
+                AccountCredentials temp = currentCLient.getAccountByCurrency(currency);
+                if(temp!=null){
+                    out.print("Insert how much money you want to deposit: ");
+                    double value = Double.parseDouble(in.readLine());
+                    if(value > 0){
+                        temp.setBalance(temp.getBalance()+value); // to repair because i assume it doesnt change the list
+                    }
+                }
+            }catch (Exception e){
+                throw new RuntimeException(e);
+            }
+        }
+        private void handleWithdraw() {
+            try{
+                out.print("What is the currency you want to withdraw");
+                String currency = in.readLine();
+                AccountCredentials temp = currentCLient.getAccountByCurrency(currency);
+                if(temp!=null){
+                    out.print("Insert how much money you want to withdraw: ");
+                    double value = Double.parseDouble(in.readLine());
+                    if(value > 0 && value <= temp.getBalance()){
+                        temp.setBalance(temp.getBalance()-value); // to repair because i assume it doesnt change the list
+                    }
+                }
+            }catch (Exception e){
+                throw new RuntimeException(e);
             }
         }
     }

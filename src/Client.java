@@ -17,7 +17,10 @@ public class Client {
             String line = null;
             while(!"exit".equalsIgnoreCase(line)){
                 line = scanner.nextLine();
-
+                out.println(line);
+                String line2;
+                line2 = in.readLine();
+                System.out.println(line2);
             }
         }catch (Exception e){
             throw new RuntimeException(e);

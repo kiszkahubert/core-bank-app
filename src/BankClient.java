@@ -21,4 +21,12 @@ public class BankClient{
     public List<AccountCredentials> getAllAccounts(){
         return clientAccounts;
     }
+    public AccountCredentials getAccountByCurrency(String currency){
+        for (var val : clientAccounts){
+            if(val.getCurrency().equals(currency)){
+                return val;
+            }
+        }
+        return null;
+    }
 }
