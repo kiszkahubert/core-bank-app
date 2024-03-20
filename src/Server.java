@@ -10,7 +10,7 @@ import java.util.List;
 public class Server {
     private static List<BankClient> clients = new ArrayList<>();
     public static void main(String[] args) {
-        start(5000);
+        start(5010);
     }
     public static void start(int port){
         try{
@@ -40,7 +40,7 @@ public class Server {
         @Override
         public void run() {
             try{
-                out.print("Welcome to the bank, please enter 1 to login or 2 to register: ");
+                out.println("Welcome to the bank, please enter 1 to login or 2 to register: ");
                 String choice = in.readLine();
                 switch (choice){
                     case "1" -> handleLogin();
@@ -51,16 +51,16 @@ public class Server {
             }
         }
         private void handleLogin() throws IOException{
-            out.print("Enter your UID:");
+            out.println("Enter your UID:");
             String uid = in.readLine();
-            out.print("Enter your PIN");
+            out.println("Enter your PIN");
             String pin = in.readLine();
             currentCLient = authenticateClient(uid,pin);
             if(currentCLient != null){
-                out.print("Login successful");
+                out.println("Login successful");
                 handleLoggedInClient();
             } else {
-                out.print("Invalid credentials");
+                out.println("Invalid credentials");
             }
         }
         private BankClient authenticateClient(String UID, String PIN){
@@ -72,19 +72,19 @@ public class Server {
             return null;
         }
         private void handleRegistration() throws IOException {
-            out.print("Enter your desired UID:");
+            out.println("Enter your desired UID:");
             String uid = in.readLine();
 
             if (findClientByUID(uid) != null) {
-                out.print("UID already exists. Please choose another.");
+                out.println("UID already exists. Please choose another.");
                 return;
             }
-            out.print("Enter a PIN for your account:");
+            out.println("Enter a PIN for your account:");
             String pin = in.readLine();
             BankClient newClient = new BankClient(uid,pin);
             clients.add(newClient);
             currentCLient = newClient;
-            out.print("Registration successful!");
+            out.println("Registration successful!");
             handleLoggedInClient();
         }
 
@@ -115,10 +115,10 @@ public class Server {
                 }
             }
         }
-        private synchronized void handleCreateAccount() {
+        private void handleCreateAccount() {
             try{
                 out.println("Please insert credentials for your new account");
-                out.print("Insert currency you want (PLN USD CAD): ");
+                out.println("Insert currency you want (PLN USD CAD): ");
                 String currency = in.readLine();
                 AccountCredentials accountCredentials = new AccountCredentials(currency,0);
                 currentCLient.addAccount(accountCredentials);
@@ -134,16 +134,16 @@ public class Server {
                 for (var val : accs){
                     out.println("Currency: "+val.getCurrency()+"\n" +
                             "Balance: "+val.getBalance()+"\n"+
-                            val.getAuthorizedUsers()); // to replace probably wrong
+                            val.getAuthorizedUsers());
                 }
             }
         }
         private void handleChangePIN() {
             try{
-                out.print("Insert your old PIN: ");
+                out.println("Insert your old PIN: ");
                 String pin = in.readLine();
                 if(pin.equals(currentCLient.getPIN())){
-                    out.print("Insert your new pin: ");
+                    out.println("Insert your new pin: ");
                     String temp = in.readLine();
                     currentCLient.setPIN(temp);
                     out.println("Your PIN has been changed");
@@ -160,10 +160,10 @@ public class Server {
                 String currency = in.readLine();
                 AccountCredentials temp = currentCLient.getAccountByCurrency(currency);
                 if(temp!=null){
-                    out.print("Insert how much money you want to deposit: ");
+                    out.println("Insert how much money you want to deposit: ");
                     double value = Double.parseDouble(in.readLine());
                     if(value > 0){
-                        temp.setBalance(temp.getBalance()+value); // to repair because i assume it doesnt change the list
+                        temp.setBalance(temp.getBalance()+value);
                     }
                 }
             }catch (Exception e){
@@ -172,14 +172,14 @@ public class Server {
         }
         private void handleWithdraw() {
             try{
-                out.print("What is the currency you want to withdraw");
+                out.println("What is the currency you want to withdraw");
                 String currency = in.readLine();
                 AccountCredentials temp = currentCLient.getAccountByCurrency(currency);
                 if(temp!=null){
-                    out.print("Insert how much money you want to withdraw: ");
+                    out.println("Insert how much money you want to withdraw: ");
                     double value = Double.parseDouble(in.readLine());
                     if(value > 0 && value <= temp.getBalance()){
-                        temp.setBalance(temp.getBalance()-value); // to repair because i assume it doesnt change the list
+                        temp.setBalance(temp.getBalance()-value);
                     }
                 }
             }catch (Exception e){

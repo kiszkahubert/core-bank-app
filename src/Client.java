@@ -8,7 +8,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Client {
     public static void main(String[] args) {
-        start(5000);
+        start(5010);
     }
     public static void start(int port){
         try(Socket clientSocket = new Socket("localhost",port)){
