@@ -1,5 +1,3 @@
-import lombok.AllArgsConstructor;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -84,13 +82,11 @@ public class Server {
                 out.println("UID already exists. Please choose another.");
                 return;
             }
-
             out.println("Enter a PIN for your account:");
             String pin = in.readLine();
-
             BankClient newClient = new BankClient(uid,pin);
             clients.add(newClient);
-
+            currentCLient = newClient;
             out.println("Registration successful!");
             handleLoggedInClient();
         }
@@ -111,7 +107,7 @@ public class Server {
                 out.println("4. Deposit");
                 out.println("5. Withdraw");
                 out.println("6. Logout");
-                String choice = in.readLine();
+                String choice = in.readLine().trim();
 
                 switch (choice) {
                     case "1":
@@ -143,17 +139,21 @@ public class Server {
                 out.print("Insert currency you want (PLN USD CAD): ");
                 String currency = in.readLine();
                 AccountCredentials accountCredentials = new AccountCredentials(currency,0);
-                currentCLient.addClient(accountCredentials);
+                currentCLient.addAccount(accountCredentials);
             }catch (Exception e){
                 throw new RuntimeException(e);
             }
         }
         private void handleViewAccounts() {
             List<AccountCredentials> accs = currentCLient.getClientAccounts();
-            for (var val : accs){
-                out.println("Currency: "+val.getCurrency()+"\n" +
+            if(accs == null || accs.isEmpty() ){
+                out.println("No account were found");
+            } else{
+                for (var val : accs){
+                    out.println("Currency: "+val.getCurrency()+"\n" +
                             "Balance: "+val.getBalance()+"\n"+
                             val.getAuthorizedUsers()); // to replace probably wrong
+                }
             }
         }
         private void handleChangePIN() {

@@ -1,4 +1,3 @@
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,12 +13,10 @@ public class BankClient{
     public BankClient(String UID, String PIN) {
         this.UID = UID;
         this.PIN = PIN;
+        clientAccounts = new ArrayList<>();
     }
-    public void addClient(AccountCredentials credentials){
+    public void addAccount(AccountCredentials credentials){
         clientAccounts.add(credentials);
-    }
-    public List<AccountCredentials> getAllAccounts(){
-        return clientAccounts;
     }
     public AccountCredentials getAccountByCurrency(String currency){
         for (var val : clientAccounts){
